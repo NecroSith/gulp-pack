@@ -13,17 +13,20 @@ var gulp = require('gulp'),
 	clean = require('gulp-clean'),
 	uglify = require('gulp-uglify'),
 	sequence = require('run-sequence'),
-	pug = require('pug');
+	pug = require('gulp-pug');
 
 
 // Watch over all the important folders and refresh the page if changes were made
 gulp.task('server',['less'], function() {
     browserSync.init({
-    	server: { baseDir: './build/'};
+    	server: { baseDir: './build/'}
     })
     gulp.watch('src/less/**/*.less', ['less']);
-    gulp.watch('src/js/**/*.js').on('change', browserSync.reload);
-    gulp.watch('src/**/*.html').on('change', browserSync.reload);
+    gulp.watch('src/js/**/*.js').on('change', ['copy:js']);
+    gulp.watch('src/lib/**/*.*').on('change', ['copy:lib']);
+    gulp.watch('src/img/**/*.*').on('change', ['copy:img']);
+    // gulp.watch('src/**/*.html').on('change', browserSync.reload);
+    gulp.watch('src/**/*.pug').on('change', ['pug']);
 });
 
 
@@ -74,7 +77,7 @@ gulp.task('less', function() {
 
 // Delete build directory
 gulp.task('clean:build', function() {
-    return gulp.src('build/', {read: false})
+    return gulp.src('.build', {read: false})
     	.pipe(clean());
 });
 
@@ -89,7 +92,7 @@ gulp.task('pug', function() {
     				message: err.message
     			}
     		})
-    	})
+    	}))
     	.pipe(pug({
     		pretty: true
     	}))
@@ -99,22 +102,22 @@ gulp.task('pug', function() {
 
 // Copy js files from source directory to build
 gulp.task('copy:js', function() {
-    return gulp.src('src/js/**.js')
-    	.pipe(gulp.dest('build/js'))
+    return gulp.src('src/js/**/*.js')
+    	.pipe(gulp.dest('build/js/'))
     	.pipe(browserSync.stream());
 });
 
 // Copy libraries from source directory to build
 gulp.task('copy:lib', function() {
-    return gulp.src('src/lib/**.*')
-    	.pipe(gulp.dest('build/lib'))
+    return gulp.src('src/lib/**/*.*')
+    	.pipe(gulp.dest('build/lib/'))
     	.pipe(browserSync.stream());
 });
 
 // Copy images from source directory to build
 gulp.task('copy:img', function() {
     return gulp.src('src/img/**.*')
-    	.pipe(gulp.dest('build/img'))
+    	.pipe(gulp.dest('build/img/'))
     	.pipe(browserSync.stream());
 });
 
