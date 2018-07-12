@@ -5,7 +5,7 @@
 var gulp = require('gulp'),
 	less = require('gulp-less'),
 	// sass = require('gulp-sass'),					// Uncomment this if you use SCSS
-	browserSync = require('browser-sync').create();
+	browserSync = require('browser-sync').create(),
 	notify = require('gulp-notify'), 				// For error messaging in console
 	autoprefixer = require('gulp-autoprefixer'),
 	sourcemaps = require('gulp-sourcemaps'),
@@ -14,20 +14,6 @@ var gulp = require('gulp'),
 	uglify = require('gulp-uglify'),
 	sequence = require('run-sequence'),
 	pug = require('gulp-pug');
-
-
-// Watch over all the important folders and refresh the page if changes were made
-gulp.task('server',['less'], function() {
-    browserSync.init({
-    	server: { baseDir: './build/'}
-    })
-    gulp.watch('src/less/**/*.less', ['less']);
-    gulp.watch('src/js/**/*.js').on('change', ['copy:js']);
-    gulp.watch('src/lib/**/*.*').on('change', ['copy:lib']);
-    gulp.watch('src/img/**/*.*').on('change', ['copy:img']);
-    // gulp.watch('src/**/*.html').on('change', browserSync.reload);
-    gulp.watch('src/**/*.pug').on('change', ['pug']);
-});
 
 
 // Watch over LESS files and refresh the page if changes were made
@@ -121,13 +107,26 @@ gulp.task('copy:img', function() {
     	.pipe(browserSync.stream());
 });
 
+// Watch over all the important folders and refresh the page if changes were made
+gulp.task('server',['less'], function() {
+    browserSync.init({
+        server: { baseDir: 'build/'}
+    })
+    gulp.watch('src/less/**/*.less', ['less']);
+    gulp.watch('src/js/**/*.js', ['copy:js']);
+    gulp.watch('src/lib/**/*.*', ['copy:lib']);
+    gulp.watch('src/img/**/*.*', ['copy:img']);
+    // gulp.watch('src/**/*.html').on('change', browserSync.reload);
+    gulp.watch('src/**/*.pug', ['pug']);
+});
+
 
 gulp.task('default', function(callback) {
     sequence(
     	'clean:build', 
     	['less', 'pug', 'copy:lib', 'copy:js', 'copy:img'],
     	'server',
-    	callback);
+    	callback)
 });
 
 
