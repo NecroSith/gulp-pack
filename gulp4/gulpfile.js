@@ -3,40 +3,40 @@
 
 //  Variable initializing
 const gulp = require('gulp'),
-	sass = require('gulp-sass'),					
-	browserSync = require('browser-sync').create(),
-	notify = require('gulp-notify'), 				// For error messaging in console
-	autoprefixer = require('gulp-autoprefixer'),
+    sass = require('gulp-sass'),
+    browserSync = require('browser-sync').create(),
+    notify = require('gulp-notify'), // For error messaging in console
+    autoprefixer = require('gulp-autoprefixer'),
     optimizer = require('gulp-imagemin'),
     minify = require('gulp-clean-css'),
     uglify = require('gulp-uglify'),
-	sourcemaps = require('gulp-sourcemaps'),
-	plumber = require('gulp-plumber'), 	
+    sourcemaps = require('gulp-sourcemaps'),
+    plumber = require('gulp-plumber'),
     concat = require('gulp-concat'),
-	clean = require('gulp-clean'),
+    clean = require('gulp-clean'),
     wait = require('gulp-wait');
-	del = require('del');
+del = require('del');
 
 gulp.task('sass', () => {
     return gulp.src(['src/scss/**/*.scss', 'src/sass/**/*.sass']).
-    	pipe(plumber({
-    		errorHandler: notify.onError(function(err){
-    			return {
-    				title: 'SCSS ERROR',
-    				message: err.message
-    			}
-    		})
-    	}))
+    pipe(plumber({
+            errorHandler: notify.onError(function(err) {
+                return {
+                    title: 'SCSS ERROR',
+                    message: err.message
+                }
+            })
+        }))
         // .pipe(concat('main.scss'))
         // .pipe(gulp.dest('./src/scss/'))
-    	.pipe(sourcemaps.init())
+        .pipe(sourcemaps.init())
         .pipe(wait(500))
-		.pipe(sass())
-		.pipe(autoprefixer({
-			browsers: ['last 3 versions'],
-			cascade: false
-		}))
-		.pipe(gulp.dest('src/css/'))
+        .pipe(sass())
+        .pipe(autoprefixer({
+            browsers: ['last 3 versions'],
+            cascade: false
+        }))
+        .pipe(gulp.dest('src/css/'))
         .pipe(browserSync.stream());
 });
 
@@ -53,8 +53,8 @@ gulp.task('clean:css', () => {
 // Copy js files from source directory to build
 gulp.task('copy:js', () => {
     return gulp.src('./src/js/**/*.*')
-    	.pipe(gulp.dest('./build/js/'))
-    	.pipe(browserSync.stream());
+        .pipe(gulp.dest('./build/js/'))
+        .pipe(browserSync.stream());
 });
 
 gulp.task('copy:php', () => {
@@ -79,8 +79,8 @@ gulp.task('copy:fonts', () => {
 // Copy libraries from source directory to build
 gulp.task('copy:lib', () => {
     return gulp.src('./src/libs/**/*.*')
-    	.pipe(gulp.dest('./build/libs/'))
-    	.pipe(browserSync.stream());
+        .pipe(gulp.dest('./build/libs/'))
+        .pipe(browserSync.stream());
 });
 
 // Copy images from source directory to build
@@ -93,8 +93,8 @@ gulp.task('copy:lib', () => {
 // Copy html files from source directory to build
 gulp.task('copy:html', () => {
     return gulp.src('./src/*.html')
-    	.pipe(gulp.dest('./build/'))
-    	.pipe(browserSync.stream());
+        .pipe(gulp.dest('./build/'))
+        .pipe(browserSync.stream());
 });
 
 gulp.task('copy:ico', () => {
@@ -106,7 +106,7 @@ gulp.task('copy:ico', () => {
 gulp.task('minify-css', () => {
     return gulp.src('./src/css/*.css')
         .pipe(sourcemaps.init())
-        .pipe(minify({compatibility: 'ie8'}))
+        .pipe(minify({ compatibility: 'ie8' }))
         .pipe(sourcemaps.write())
         .pipe(gulp.dest('./build/css/'))
         .pipe(browserSync.stream());
@@ -133,9 +133,9 @@ gulp.task('optimize-images', () => {
 // Watch over all the important folders and refresh the page if changes were made
 gulp.task('server', () => {
     browserSync.init({
-        server: { baseDir: './build'}
+        server: { baseDir: './build' }
     })
-    gulp.watch('./src/scss/**/*.scss').on('change', gulp.series('sass', 'minify-css', reload));
+    gulp.watch(['src/scss/**/*.scss', 'src/sass/**/*.sass']).on('change', gulp.series('sass', 'minify-css', reload));
     gulp.watch('./src/js/**/*.js').on('change', gulp.series('copy:js'));
     gulp.watch('./src/php/**/*.*').on('change', gulp.series('copy:php'));
     gulp.watch('./src/libs/**/*.*').on('change', gulp.series('copy:lib'));
@@ -145,15 +145,12 @@ gulp.task('server', () => {
 });
 
 function reload(done) {
-	browserSync.reload();
-	done();
+    browserSync.reload();
+    done();
 }
 
 gulp.task('default',
     gulp.series('clean:build', 'clean:css',
-    	gulp.parallel('sass','copy:fonts', 'copy:html',  'copy:php', 'copy:ico', 'copy:files', 'copy:lib', 'copy:js', 'optimize-images'), 'minify-css', 'server'
+        gulp.parallel('sass', 'copy:fonts', 'copy:html', 'copy:php', 'copy:ico', 'copy:files', 'copy:lib', 'copy:js', 'optimize-images'), 'minify-css', 'server'
     )
 );
-
-
-
