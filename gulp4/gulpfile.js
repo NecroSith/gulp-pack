@@ -18,7 +18,7 @@ const gulp = require('gulp'),
 	del = require('del');
 
 gulp.task('sass', () => {
-    return gulp.src('src/scss/**/*.scss').
+    return gulp.src(['src/scss/**/*.scss', 'src/sass/**/*.sass']).
     	pipe(plumber({
     		errorHandler: notify.onError(function(err){
     			return {
